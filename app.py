@@ -10,27 +10,26 @@ def load_data(file_path):
 # Home Page
 def home_page():
     st.title("Welcome to the ERP Visualization App")
-    st.write("""
-    This application provides a comprehensive overview of retail grocery transactions.
-    Navigate to the "Database" page to explore the dataset, filter data, and visualize key metrics.
-    """)
-    st.image(
-        "https://source.unsplash.com/featured/?grocery,store", 
-        use_column_width=True, 
-        caption="Retail Grocery Insights"
+    st.markdown(
+        """
+        This application allows you to explore and visualize retail grocery business transactions.
+        Navigate to the **Database** page to analyze data and generate insights.
+        """
     )
-    st.markdown("""
-    ### Features:
-    - View transaction data in an easy-to-read format.
-    - Apply filters by date, category, and payment method.
-    - Visualize key metrics with interactive graphs.
-    """)
-    st.info("Use the navigation menu above to switch between pages.")
+    st.image("https://via.placeholder.com/800x400?text=ERP+Visualization", use_column_width=True)
+    st.markdown(
+        """
+        ### Features:
+        - **Data Overview**: Explore the transaction dataset.
+        - **Filtering Options**: Analyze specific subsets of data.
+        - **Visualizations**: View insights with interactive charts.
+        """
+    )
+    st.markdown("Navigate to the **Database** page to get started!")
 
 # Database Page
 def database_page():
     st.title("Database and Visualizations")
-    st.write("Explore the transaction data and gain insights with visualizations.")
 
     # Load data
     try:
@@ -39,21 +38,19 @@ def database_page():
         st.error("File 'erp.csv' not found in the main directory. Please ensure it exists.")
         return
 
-    # Filter options in main UI
-    st.subheader("Filter Options")
-    with st.container():
-        unique_dates = data["Date"].unique()
-        unique_categories = data["Category"].unique()
-        unique_payment_methods = data["Payment_Method"].unique()
+    # Display dataset
+    st.subheader("Dataset Overview")
+    st.dataframe(data)
 
-        col1, col2, col3 = st.columns(3)
+    # Filtering options
+    st.subheader("Filter Data")
+    unique_dates = data["Date"].unique()
+    unique_categories = data["Category"].unique()
+    unique_payment_methods = data["Payment_Method"].unique()
 
-        with col1:
-            selected_date = st.multiselect("Select Date(s)", unique_dates, default=unique_dates)
-        with col2:
-            selected_category = st.multiselect("Select Category(s)", unique_categories, default=unique_categories)
-        with col3:
-            selected_payment = st.multiselect("Select Payment Method(s)", unique_payment_methods, default=unique_payment_methods)
+    selected_date = st.multiselect("Select Date(s)", unique_dates, default=unique_dates)
+    selected_category = st.multiselect("Select Category(s)", unique_categories, default=unique_categories)
+    selected_payment = st.multiselect("Select Payment Method(s)", unique_payment_methods, default=unique_payment_methods)
 
     # Apply filters
     filtered_data = data[
@@ -66,7 +63,7 @@ def database_page():
     st.subheader("Filtered Data")
     st.dataframe(filtered_data)
 
-    # Visualization section
+    # Visualization
     st.subheader("Visualizations")
 
     # Total Sales by Category
@@ -94,16 +91,16 @@ def database_page():
     fig3 = px.pie(payment_breakdown, names="Payment_Method", values="Count", title="Payment Method Breakdown")
     st.plotly_chart(fig3, use_container_width=True)
 
-# Main app
+# Main App
 def main():
     # Navigation menu
-    st.set_page_config(page_title="ERP Visualization App", layout="wide")
-    menu = ["Home", "Database"]
-    choice = st.selectbox("Navigation", menu, index=0)
+    st.sidebar.title("Navigation")
+    page = st.sidebar.radio("Go to", ["Home", "Database"])
 
-    if choice == "Home":
+    # Render selected page
+    if page == "Home":
         home_page()
-    elif choice == "Database":
+    elif page == "Database":
         database_page()
 
 if __name__ == "__main__":
